@@ -16,6 +16,7 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 			/>
 			{portsJSON.map((x) => {
+				const anchorage = x.find((y) => y.type === 'anchorage');
 				return x.map((y) => {
 					return (
 						<Marker icon={anchorIcon} position={[y.lat, y.long]}>
@@ -32,8 +33,16 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 									</span>
 									<span className="tooltip-text">
 										<span className="text-sm">{'Type: '}</span>
-										{y.type}
+										{y.type[0].toUpperCase() + y.type.slice(1)}
 									</span>
+									{y.type !== 'anchorage' && anchorage ? (
+										<span className="tooltip-text">
+											<span className="text-sm">{'Anchorage: '}</span>
+											{anchorage.name}
+										</span>
+									) : (
+										<></>
+									)}
 								</div>
 							</Popup>
 						</Marker>

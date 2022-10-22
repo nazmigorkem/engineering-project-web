@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 		<div className="flex flex-col justify-center items-center">
 			<div className="text-5xl text-white h-[10vh] flex items-center"></div>
 			<div className="w-screen h-[80vh] flex justify-center items-center">
-				<div className="bg-[#0d4641] w-64 h-full select-none">
+				<div id="menu-container" className="bg-[#0d4641] w-64 h-full select-none">
 					<div className="grid grid-cols-2 gap-3 p-3">
 						<div
 							onClick={() => setShowAnchorageGroups(!showAnchorageGroups)}
