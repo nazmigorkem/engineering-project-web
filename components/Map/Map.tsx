@@ -1,8 +1,8 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, LayerGroup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import portsJSON from '../../geo/ports.json';
-import { useState } from 'react';
+import Click from './Hooks/Click';
 let anchorIcon = L.icon({
 	iconUrl: 'anchor.svg',
 	iconSize: [25, 25],
@@ -11,15 +11,16 @@ let anchorIcon = L.icon({
 export default function Map({ showAnchorageGroups }: { showAnchorageGroups: boolean }) {
 	return (
 		<MapContainer doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
+			<Click />
 			<TileLayer
 				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 			/>
 			{portsJSON.map((x) => {
 				const anchorage = x.find((y) => y.type === 'anchorage');
-				return x.map((y) => {
+				return x.map((y, i) => {
 					return (
-						<Marker icon={anchorIcon} position={[y.lat, y.long]}>
+						<Marker key={i} icon={anchorIcon} position={[y.lat, y.long]}>
 							<Popup>
 								<div className="flex flex-col">
 									<span className="font-semibold text-lg">{y.name}</span>
@@ -53,18 +54,19 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 			{showAnchorageGroups &&
 				portsJSON.map((x) => {
 					const anchorage = x.find((y) => y.type === 'anchorage');
-					return x.map((y) =>
-						y.type !== 'anchorage' && anchorage ? (
-							<Polyline
-								pathOptions={{ color: 'lime' }}
-								positions={[
-									[anchorage.lat, anchorage.long],
-									[y.lat, y.long],
-								]}
-							/>
-						) : (
-							<></>
-						)
+					return x.map(
+						(y, i) =>
+							y.type !== 'anchorage' &&
+							anchorage && (
+								<Polyline
+									key={i}
+									pathOptions={{ color: 'lime' }}
+									positions={[
+										[anchorage.lat, anchorage.long],
+										[y.lat, y.long],
+									]}
+								/>
+							)
 					);
 				})}
 		</MapContainer>
