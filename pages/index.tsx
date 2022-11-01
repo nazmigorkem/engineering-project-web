@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import ports from '../geo/ports.json';
-import dynamic from 'next/dynamic';
+
 import Map from '../components/Map';
 import { useState } from 'react';
 import Switch from '../components/MapControllers/Switch';
@@ -17,7 +17,7 @@ const Home: NextPage = () => {
 						{/* <div className="bg-white h-7 w-full"></div> */}
 					</div>
 				</div>
-				<div className="h-[80vh] w-full cursor-crosshair">
+				<div className="h-[80vh] w-full">
 					<Map showAnchorageGroups={showAnchorageGroups} />
 				</div>
 			</div>
