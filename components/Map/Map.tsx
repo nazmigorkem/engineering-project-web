@@ -2,19 +2,20 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import portsJSON from '../../geo/ports.json';
-import Click from './Hooks/Click';
+import { useVessels } from '../../util/requests';
 let anchorIcon = L.icon({
 	iconUrl: 'anchor.svg',
 	iconSize: [25, 25],
 });
 
 export default function Map({ showAnchorageGroups }: { showAnchorageGroups: boolean }) {
+	const { vessels, isLoading, isError } = useVessels();
+
 	return (
 		<MapContainer doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
-			<Click />
 			<TileLayer
-				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				attribution='<a href=\"https://cartiqo.nl/\" target=\"_blank\">© Cartiqo</a> <a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">© MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">© OpenStreetMap contributors</a>'
+				url="https://api.maptiler.com/maps/basic-v2-dark/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA"
 			/>
 			{portsJSON.map((x) => {
 				const anchorage = x.find((y) => y.type === 'anchorage');
@@ -50,6 +51,11 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 					);
 				});
 			})}
+
+			{!(isLoading || isError) &&
+				vessels.map((x, i) => {
+					return <Marker key={i} icon={anchorIcon} position={[x.lat, x.lon]}></Marker>;
+				})}
 
 			{showAnchorageGroups &&
 				portsJSON.map((x) => {
