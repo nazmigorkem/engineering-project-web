@@ -1,6 +1,4 @@
 import type { NextPage } from 'next';
-import ports from '../geo/ports.json';
-
 import Map from '../components/Map';
 import { useState } from 'react';
 import Switch from '../components/MapControllers/Switch';

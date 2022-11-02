@@ -8,6 +8,13 @@ let anchorIcon = L.icon({
 	iconSize: [25, 25],
 });
 
+let vesselIcon = L.icon({
+	iconUrl: 'vessel.png',
+	iconSize: [25, 25],
+});
+
+import 'leaflet-rotatedmarker';
+
 export default function Map({ showAnchorageGroups }: { showAnchorageGroups: boolean }) {
 	const { vessels, isLoading, isError } = useVessels();
 
@@ -54,7 +61,7 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 
 			{!(isLoading || isError) &&
 				vessels.map((x, i) => {
-					return <Marker key={i} icon={anchorIcon} position={[x.lat, x.lon]}></Marker>;
+					return <Marker rotationOrigin="center" rotationAngle={x.course} key={i} icon={vesselIcon} position={[x.lat, x.lon]}></Marker>;
 				})}
 
 			{showAnchorageGroups &&
