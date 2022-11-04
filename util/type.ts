@@ -9,6 +9,15 @@ export type Port = {
 	type: Type;
 };
 
+export type Route = {
+	from: string;
+	to: string;
+	density: number[];
+	noise: number[];
+	coordinates: Coordinate[];
+};
+
+export type Coordinate = [lon: number, lat: number];
 export enum Type {
 	Anchorage = 'anchorage',
 	Port = 'port',

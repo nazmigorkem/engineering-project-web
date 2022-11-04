@@ -1,7 +1,7 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl } from 'react-leaflet';
+import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { usePorts, useVessels } from '../../util/requests';
+import { usePorts, useRoutes, useVessels } from '../../util/requests';
 let anchorIcon = L.icon({
 	iconUrl: 'anchor.svg',
 	iconSize: [25, 25],
@@ -13,17 +13,18 @@ let vesselIcon = L.icon({
 });
 import 'leaflet-rotatedmarker';
 
-export default function Map({ showAnchorageGroups }: { showAnchorageGroups: boolean }) {
+export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorageGroups: boolean; showRoutes: boolean }) {
 	const { vessels, isLoading: isVesselsLoading, isError: isVesselsError } = useVessels();
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts();
+	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes();
 
 	return (
-		<MapContainer doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
+		<MapContainer style={{ backgroundColor: '#232323' }} doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
 			<TileLayer
 				attribution='<a href=\"https://cartiqo.nl/\" target=\"_blank\">© Cartiqo</a> <a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">© MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">© OpenStreetMap contributors</a>'
 				url="https://api.maptiler.com/maps/darkmatter/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA"
 			/>
-			{!isPortsLoading &&
+			{ports !== undefined &&
 				ports.map((x) => {
 					const anchorage = x.find((y) => y.type === 'anchorage');
 					return x.map((y, i) => {
@@ -59,13 +60,31 @@ export default function Map({ showAnchorageGroups }: { showAnchorageGroups: bool
 					});
 				})}
 
-			{!isVesselsLoading &&
+			{vessels !== undefined &&
 				vessels.map((x, i) => {
 					return x.map((y, i) => {
 						return <Marker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}></Marker>;
 					});
 				})}
-
+			{routes !== undefined &&
+				showRoutes &&
+				routes.map((x, i) => {
+					return x.coordinates.map((y, i) => {
+						if (x.coordinates.length - 1 === i) return;
+						const next = x.coordinates[i + 1];
+						return (
+							<Polyline
+								key={i}
+								positions={[
+									[y[1], y[0]],
+									[next[1], next[0]],
+								]}
+								pathOptions={{ color: 'red' }}
+							></Polyline>
+						);
+					});
+				})}
+			<ScaleControl imperial={false} />
 			{!isPortsLoading &&
 				showAnchorageGroups &&
 				ports.map((x) => {
