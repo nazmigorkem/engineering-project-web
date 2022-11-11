@@ -4,11 +4,11 @@ import { fetcher, Port, Route, Vessel } from './type';
 const fetchOptions = {
 	revalidateIfStale: false,
 	revalidateOnFocus: false,
-	refreshInterval: 5000,
+	refreshInterval: 0,
 };
 
-export function useVessels() {
-	const { data, error } = useSWR(`/api/vessels`, fetcher, fetchOptions);
+export function useVessels(action: 'get' | 'generate') {
+	const { data, error } = useSWR(`/api/vessels/${action}`, fetcher, fetchOptions);
 
 	return {
 		vessels: data as Vessel[][],
@@ -17,8 +17,8 @@ export function useVessels() {
 	};
 }
 
-export function usePorts() {
-	const { data, error } = useSWR(`/api/ports`, fetcher, fetchOptions);
+export function usePorts(action: 'get') {
+	const { data, error } = useSWR(`/api/ports/${action}`, fetcher, fetchOptions);
 
 	return {
 		ports: data as Port[][],
@@ -27,8 +27,8 @@ export function usePorts() {
 	};
 }
 
-export function useRoutes() {
-	const { data, error } = useSWR(`/api/routes`, fetcher, fetchOptions);
+export function useRoutes(action: 'get') {
+	const { data, error } = useSWR(`/api/routes/${action}`, fetcher, fetchOptions);
 
 	return {
 		routes: data as Route[],

@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl, Circle } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { usePorts, useRoutes, useVessels } from '../../util/requests';
@@ -14,16 +14,13 @@ let vesselIcon = L.icon({
 import 'leaflet-rotatedmarker';
 
 export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorageGroups: boolean; showRoutes: boolean }) {
-	const { vessels, isLoading: isVesselsLoading, isError: isVesselsError } = useVessels();
-	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts();
-	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes();
+	const { vessels, isLoading: isVesselsLoading, isError: isVesselsError } = useVessels('generate');
+	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
+	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
 
 	return (
 		<MapContainer style={{ backgroundColor: '#232323' }} doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
-			<TileLayer
-				attribution='<a href=\"https://cartiqo.nl/\" target=\"_blank\">© Cartiqo</a> <a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">© MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">© OpenStreetMap contributors</a>'
-				url="https://api.maptiler.com/maps/darkmatter/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA"
-			/>
+			<TileLayer url="https://api.maptiler.com/maps/darkmatter/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA" />
 			{ports !== undefined &&
 				ports.map((x) => {
 					const anchorage = x.find((y) => y.type === 'anchorage');
@@ -73,19 +70,26 @@ export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorage
 						if (x.coordinates.length - 1 === i) return;
 						const next = x.coordinates[i + 1];
 						return (
-							<Polyline
-								key={i}
-								positions={[
-									[y[1], y[0]],
-									[next[1], next[0]],
-								]}
-								pathOptions={{ color: 'red' }}
-							></Polyline>
+							<>
+								{x.coordinates.length - 2 === i ? (
+									<Circle center={[next[1], next[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+								) : (
+									<Circle center={[y[1], y[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+								)}
+								<Polyline
+									key={i}
+									positions={[
+										[y[1], y[0]],
+										[next[1], next[0]],
+									]}
+									pathOptions={{ color: '#277370' }}
+								></Polyline>
+							</>
 						);
 					});
 				})}
 			<ScaleControl imperial={false} />
-			{!isPortsLoading &&
+			{!ports !== undefined &&
 				showAnchorageGroups &&
 				ports.map((x) => {
 					const anchorage = x.find((y) => y.type === 'anchorage');
