@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl, Circle, Rectangle } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { usePorts, useRoutes, useVessels } from '../../util/requests';
@@ -13,7 +13,15 @@ let vesselIcon = L.icon({
 });
 import 'leaflet-rotatedmarker';
 
-export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorageGroups: boolean; showRoutes: boolean }) {
+export default function Map({
+	showAnchorageGroups,
+	showRoutes,
+	showVessels,
+}: {
+	showAnchorageGroups: boolean;
+	showRoutes: boolean;
+	showVessels: boolean;
+}) {
 	const { vessels, isLoading: isVesselsLoading, isError: isVesselsError } = useVessels('generate');
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
 	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
@@ -58,9 +66,38 @@ export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorage
 				})}
 
 			{vessels !== undefined &&
+				showVessels &&
 				vessels.map((x, i) => {
 					return x.map((y, i) => {
-						return <Marker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}></Marker>;
+						return (
+							<Marker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}>
+								{' '}
+								<Popup>
+									<div className="flex flex-col">
+										<span className="tooltip-text">
+											<span className="text-sm">{'MMSI: '}</span>
+											{y.mmsi}
+										</span>
+										<span className="tooltip-text">
+											<span className="text-sm">{'Latitude: '}</span>
+											{y.lat}
+										</span>
+										<span className="tooltip-text">
+											<span className="text-sm">{'Longitude: '}</span>
+											{y.lon}
+										</span>
+										<span className="tooltip-text">
+											<span className="text-sm">{'Course: '}</span>
+											{y.course}
+										</span>
+										<span className="tooltip-text">
+											<span className="text-sm">{'Heading: '}</span>
+											{y.heading}
+										</span>
+									</div>
+								</Popup>
+							</Marker>
+						);
 					});
 				})}
 			{routes !== undefined &&
@@ -72,7 +109,14 @@ export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorage
 						return (
 							<>
 								{x.coordinates.length - 2 === i ? (
-									<Circle center={[next[1], next[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+									<>
+										<Circle center={[y[1], y[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+										<Circle
+											center={[next[1], next[0]]}
+											radius={300}
+											pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }}
+										/>
+									</>
 								) : (
 									<Circle center={[y[1], y[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
 								)}
@@ -97,14 +141,16 @@ export default function Map({ showAnchorageGroups, showRoutes }: { showAnchorage
 						(y, i) =>
 							y.type !== 'anchorage' &&
 							anchorage && (
-								<Polyline
-									key={i}
-									pathOptions={{ color: 'lime' }}
-									positions={[
-										[anchorage.lat, anchorage.long],
-										[y.lat, y.long],
-									]}
-								/>
+								<>
+									<Polyline
+										key={i}
+										pathOptions={{ color: 'lime' }}
+										positions={[
+											[anchorage.lat, anchorage.long],
+											[y.lat, y.long],
+										]}
+									/>
+								</>
 							)
 					);
 				})}
