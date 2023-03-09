@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { fetcher, Port, Route, Vessel } from './type';
+import { fetcher, Port, Route, Vessel, VesselListItem } from './type';
 
 const fetchOptions = {
 	revalidateIfStale: false,
@@ -7,11 +7,11 @@ const fetchOptions = {
 	refreshInterval: 0,
 };
 
-export function useVessels(action: 'get' | 'generate') {
+export function useVessels(action: 'get' | 'update' | 'generate') {
 	const { data, error } = useSWR(`/api/vessels/${action}`, fetcher, fetchOptions);
 
 	return {
-		vessels: data as Vessel[][],
+		vessels: data as VesselListItem[],
 		isLoading: !error && !data,
 		isError: error,
 	};

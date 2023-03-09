@@ -28,7 +28,7 @@ export default function Map({
 
 	return (
 		<MapContainer style={{ backgroundColor: '#232323' }} doubleClickZoom={false} className="map" center={[40.730789, 28.23371]} zoom={10}>
-			<TileLayer url="https://api.maptiler.com/maps/darkmatter/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA" />
+			<TileLayer url="https://api.maptiler.com/maps/bright-v2/{z}/{x}/{y}.png?key=SLP3RxVFTmor8XjBW5gA" />
 			{ports !== undefined &&
 				ports.map((x) => {
 					const anchorage = x.find((y) => y.type === 'anchorage');
@@ -68,10 +68,9 @@ export default function Map({
 			{vessels !== undefined &&
 				showVessels &&
 				vessels.map((x, i) => {
-					return x.map((y, i) => {
+					return x.vessels.map((y, i) => {
 						return (
 							<Marker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}>
-								{' '}
 								<Popup>
 									<div className="flex flex-col">
 										<span className="tooltip-text">
