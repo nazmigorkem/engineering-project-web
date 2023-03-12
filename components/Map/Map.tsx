@@ -12,6 +12,7 @@ let vesselIcon = L.icon({
 	iconSize: [25, 25],
 });
 import 'leaflet-rotatedmarker';
+import RotatedMarker from './RotatedMarker';
 
 export default function Map({
 	showAnchorageGroups,
@@ -74,7 +75,7 @@ export default function Map({
 				vessels.map((x, i) => {
 					return x.vessels.map((y, i) => {
 						return (
-							<Marker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}>
+							<RotatedMarker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}>
 								<Popup>
 									<div className="flex flex-col">
 										<span className="tooltip-text">
@@ -99,7 +100,7 @@ export default function Map({
 										</span>
 									</div>
 								</Popup>
-							</Marker>
+							</RotatedMarker>
 						);
 					});
 				})}
