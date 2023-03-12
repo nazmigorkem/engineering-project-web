@@ -22,7 +22,11 @@ export default function Map({
 	showRoutes: boolean;
 	showVessels: boolean;
 }) {
-	const { vessels, isLoading: isVesselsLoading, isError: isVesselsError } = useVessels('generate');
+	const {
+		vessels,
+		isLoading: isVesselsLoading,
+		isError: isVesselsError,
+	} = useVessels('generate', { refreshInterval: 3000, revalidateIfStale: true });
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
 	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
 
