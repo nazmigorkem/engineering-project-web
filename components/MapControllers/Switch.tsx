@@ -4,7 +4,7 @@ export default function Switch({ text, state, setState }: { text: string; state:
 	return (
 		<div
 			onClick={() => setState(!state)}
-			className="h-16 hover:cursor-pointer bg-[#198179] pl-3 rounded-md w-full col-span-2 flex flex-row items-center gap-3"
+			className="h-16 hover:cursor-pointer bg-[#198179] pl-3 rounded-md col-span-2 flex flex-row items-center gap-3"
 		>
 			<span className="text-gray-300 text-sm font-semibold w-full">{text}</span>
 			<div

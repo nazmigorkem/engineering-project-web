@@ -18,16 +18,18 @@ export default function Map({
 	showAnchorageGroups,
 	showRoutes,
 	showVessels,
+	refreshRate,
 }: {
 	showAnchorageGroups: boolean;
 	showRoutes: boolean;
 	showVessels: boolean;
+	refreshRate: number;
 }) {
 	const {
 		vessels,
 		isLoading: isVesselsLoading,
 		isError: isVesselsError,
-	} = useVessels('generate', { refreshInterval: 3000, revalidateIfStale: true });
+	} = useVessels('generate', { refreshInterval: refreshRate * 1000, revalidateIfStale: false, revalidateOnFocus: false });
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
 	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
 
