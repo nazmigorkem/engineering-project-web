@@ -11,19 +11,30 @@ let vesselIcon = L.icon({
 	iconUrl: 'vessel.svg',
 	iconSize: [25, 25],
 });
+
+let selectedVesselIcon = L.icon({
+	iconUrl: 'selected_vessel.svg',
+	iconSize: [25, 25],
+});
 import 'leaflet-rotatedmarker';
 import RotatedMarker from './RotatedMarker';
+import { Dispatch, SetStateAction } from 'react';
+import { Vessel } from '../../util/type';
 
 export default function Map({
 	showAnchorageGroups,
 	showRoutes,
 	showVessels,
 	refreshRate,
+	selectedVessel,
+	setSelectedVessel,
 }: {
 	showAnchorageGroups: boolean;
 	showRoutes: boolean;
 	showVessels: boolean;
 	refreshRate: number;
+	selectedVessel: Vessel;
+	setSelectedVessel: Dispatch<SetStateAction<Vessel>>;
 }) {
 	const {
 		vessels,
@@ -76,9 +87,30 @@ export default function Map({
 				showVessels &&
 				vessels.map((x, i) => {
 					return x.vessels.map((y, i) => {
+						const isSelected = selectedVessel.mmsi === y.mmsi;
 						return (
-							<RotatedMarker rotationOrigin="center" rotationAngle={y.course} key={i} icon={vesselIcon} position={[y.lat, y.lon]}>
-								<Popup>
+							<RotatedMarker
+								eventHandlers={{
+									click: async (event: any) => {
+										if (!isSelected) {
+											await fetch(`/api/vessels/select`, {
+												method: 'POST',
+												body: JSON.stringify({
+													mmsi: y['mmsi'],
+													route_id: x['route_id'],
+												}),
+											});
+											setSelectedVessel(y);
+										}
+									},
+								}}
+								rotationOrigin="center"
+								rotationAngle={y.course}
+								key={i}
+								icon={!isSelected ? vesselIcon : selectedVesselIcon}
+								position={[y.lat, y.lon]}
+							>
+								{/* <Popup>
 									<div className="flex flex-col">
 										<span className="tooltip-text">
 											<span className="text-sm">{'MMSI: '}</span>
@@ -101,7 +133,12 @@ export default function Map({
 											{y.heading}
 										</span>
 									</div>
-								</Popup>
+								</Popup> */}
+								{isSelected ? (
+									<Circle center={[y.lat, y.lon]} radius={5000} pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }} />
+								) : (
+									<></>
+								)}
 							</RotatedMarker>
 						);
 					});

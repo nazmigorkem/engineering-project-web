@@ -2,9 +2,11 @@ import type { NextPage } from 'next';
 import Map from '../components/Map';
 import { useEffect, useState } from 'react';
 import Switch from '../components/MapControllers/Switch';
+import { Vessel } from '../util/type';
 
 const Home: NextPage = () => {
 	const [showAnchorageGroups, setShowAnchorageGroups] = useState(false);
+	const [selectedVessel, setSelectedVessel] = useState({ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 });
 	const [showRoutes, setShowRoutes] = useState(false);
 	const [showVessels, setShowVessels] = useState(true);
 	const [refreshRate, setRefreshRate] = useState(3);
@@ -38,7 +40,25 @@ const Home: NextPage = () => {
 					</div>
 				</div>
 				<div className="h-[80vh] w-full">
-					<Map showAnchorageGroups={showAnchorageGroups} showRoutes={showRoutes} showVessels={showVessels} refreshRate={refreshRate} />
+					<Map
+						showAnchorageGroups={showAnchorageGroups}
+						showRoutes={showRoutes}
+						showVessels={showVessels}
+						refreshRate={refreshRate}
+						setSelectedVessel={setSelectedVessel}
+						selectedVessel={selectedVessel}
+					/>
+				</div>
+				<div id="menu-container" className="bg-[#0d4641] w-64 h-full select-none">
+					<div className="text-white text-2xl text-center">Selected Vessel</div>
+					<div className="bg-emerald-800 p-3">
+						<div className="text-white">MMSI: {selectedVessel.mmsi}</div>
+						<div className="text-white">Latitude: {selectedVessel.lat.toPrecision(10)}</div>
+						<div className="text-white">Longitude: {selectedVessel.lon.toPrecision(10)}</div>
+						<div className="text-white">Speed: {selectedVessel.speed.toPrecision(10)}</div>
+						<div className="text-white">Course: {selectedVessel.course.toPrecision(10)}</div>
+						<div className="text-white">Heading: {selectedVessel.heading.toPrecision(10)}</div>
+					</div>
 				</div>
 			</div>
 		</div>
