@@ -7,6 +7,7 @@ import { Vessel } from '../util/type';
 const Home: NextPage = () => {
 	const [showAnchorageGroups, setShowAnchorageGroups] = useState(false);
 	const [selectedVessel, setSelectedVessel] = useState({ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 });
+	const [closestVessels, setClosestVessels] = useState([{ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 }]);
 	const [showRoutes, setShowRoutes] = useState(false);
 	const [showVessels, setShowVessels] = useState(true);
 	const [refreshRate, setRefreshRate] = useState(3);
@@ -47,6 +48,8 @@ const Home: NextPage = () => {
 						refreshRate={refreshRate}
 						setSelectedVessel={setSelectedVessel}
 						selectedVessel={selectedVessel}
+						closestVessels={closestVessels}
+						setClosestVessels={setClosestVessels}
 					/>
 				</div>
 				<div id="menu-container" className="bg-[#0d4641] w-64 h-full select-none">

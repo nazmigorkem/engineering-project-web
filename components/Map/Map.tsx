@@ -16,6 +16,12 @@ let selectedVesselIcon = L.icon({
 	iconUrl: 'selected_vessel.svg',
 	iconSize: [25, 25],
 });
+
+let closestVesselIcon = L.icon({
+	iconUrl: 'closest_vessel.svg',
+	iconSize: [25, 25],
+});
+
 import 'leaflet-rotatedmarker';
 import RotatedMarker from './RotatedMarker';
 import { Dispatch, SetStateAction } from 'react';
@@ -28,6 +34,8 @@ export default function Map({
 	refreshRate,
 	selectedVessel,
 	setSelectedVessel,
+	closestVessels,
+	setClosestVessels,
 }: {
 	showAnchorageGroups: boolean;
 	showRoutes: boolean;
@@ -35,6 +43,8 @@ export default function Map({
 	refreshRate: number;
 	selectedVessel: Vessel;
 	setSelectedVessel: Dispatch<SetStateAction<Vessel>>;
+	closestVessels: Vessel[];
+	setClosestVessels: Dispatch<SetStateAction<Vessel[]>>;
 }) {
 	const {
 		vessels,
@@ -88,18 +98,24 @@ export default function Map({
 				vessels.map((x, i) => {
 					return x.vessels.map((y, i) => {
 						const isSelected = selectedVessel.mmsi === y.mmsi;
+						const isClosest = closestVessels.some((z) => y.mmsi === z.mmsi);
 						return (
 							<RotatedMarker
 								eventHandlers={{
 									click: async (event: any) => {
 										if (!isSelected) {
-											await fetch(`/api/vessels/select`, {
-												method: 'POST',
-												body: JSON.stringify({
-													mmsi: y['mmsi'],
-													route_id: x['route_id'],
-												}),
-											});
+											const result = await (
+												await fetch(`/api/vessels/select`, {
+													method: 'POST',
+													body: JSON.stringify({
+														mmsi: y['mmsi'],
+														route_id: x['route_id'],
+													}),
+												})
+											).json();
+											setClosestVessels(result);
+											console.log(result);
+
 											setSelectedVessel(y);
 										}
 									},
@@ -107,33 +123,9 @@ export default function Map({
 								rotationOrigin="center"
 								rotationAngle={y.course}
 								key={i}
-								icon={!isSelected ? vesselIcon : selectedVesselIcon}
+								icon={isSelected ? selectedVesselIcon : isClosest ? closestVesselIcon : vesselIcon}
 								position={[y.lat, y.lon]}
 							>
-								{/* <Popup>
-									<div className="flex flex-col">
-										<span className="tooltip-text">
-											<span className="text-sm">{'MMSI: '}</span>
-											{y.mmsi}
-										</span>
-										<span className="tooltip-text">
-											<span className="text-sm">{'Latitude: '}</span>
-											{y.lat}
-										</span>
-										<span className="tooltip-text">
-											<span className="text-sm">{'Longitude: '}</span>
-											{y.lon}
-										</span>
-										<span className="tooltip-text">
-											<span className="text-sm">{'Course: '}</span>
-											{y.course}
-										</span>
-										<span className="tooltip-text">
-											<span className="text-sm">{'Heading: '}</span>
-											{y.heading}
-										</span>
-									</div>
-								</Popup> */}
 								{isSelected ? (
 									<Circle center={[y.lat, y.lon]} radius={5000} pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }} />
 								) : (

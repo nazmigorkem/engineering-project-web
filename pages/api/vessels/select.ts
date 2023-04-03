@@ -11,5 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 			body: req.body,
 		})
 	).json();
+
 	res.send(backendResponse);
 }
