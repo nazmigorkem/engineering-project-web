@@ -34,7 +34,7 @@ const Home: NextPage = () => {
 							onClick={() => {
 								fetch('/api/vessels/reset');
 							}}
-							className="bg-[#198179] col-span-2 h-16 rounded-md"
+							className="bg-[#198179] col-span-2 h-16 rounded-md hover:bg-opacity-80 duration-200 font-semibold"
 						>
 							Restart Simulation
 						</button>
@@ -52,9 +52,9 @@ const Home: NextPage = () => {
 						setClosestVessels={setClosestVessels}
 					/>
 				</div>
-				<div id="menu-container" className="bg-[#0d4641] w-64 h-full select-none">
+				<div id="menu-container" className="bg-[#0d4641] w-64 h-full select-none flex flex-col">
 					<div className="text-white text-2xl text-center">Selected Vessel</div>
-					<div className="bg-emerald-800 p-3">
+					<div className="bg-emerald-800 p-3 m-2 rounded-md">
 						<div className="text-white">MMSI: {selectedVessel.mmsi}</div>
 						<div className="text-white">Latitude: {selectedVessel.lat.toPrecision(10)}</div>
 						<div className="text-white">Longitude: {selectedVessel.lon.toPrecision(10)}</div>
@@ -62,6 +62,14 @@ const Home: NextPage = () => {
 						<div className="text-white">Course: {selectedVessel.course.toPrecision(10)}</div>
 						<div className="text-white">Heading: {selectedVessel.heading.toPrecision(10)}</div>
 					</div>
+					<button
+						onClick={() => {
+							setSelectedVessel({ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 });
+						}}
+						className="bg-[#198179] col-span-2 m-4  h-16 rounded-md"
+					>
+						Reset
+					</button>
 				</div>
 			</div>
 		</div>

@@ -1,5 +1,12 @@
 export const baseURL = 'http://127.0.0.1:5000';
-export const fetcher = (input: RequestInfo | URL, init?: RequestInit | undefined) => fetch(input, init).then((res) => res.json());
+export const fetcher = (input: RequestInfo | URL, init?: RequestInit | undefined) =>
+	fetch(input, {
+		...init,
+		headers: {
+			...init?.headers,
+			'Content-Type': 'application/json',
+		},
+	}).then((res) => res.json());
 
 export type Vessel = { mmsi: string; lat: number; lon: number; speed: number; course: number; heading: number };
 export type VesselListItem = { route_id: number; from: string; to: string; end_points: Coordinate[]; vessels: Vessel[] };

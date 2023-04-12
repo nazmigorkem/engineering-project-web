@@ -9,16 +9,31 @@ const fetchOptions = {
 
 export function useVessels(
 	action: 'get' | 'reset' | 'generate',
+	query?: string,
 	optionalFetchOptions?: {
 		revalidateIfStale?: boolean;
 		revalidateOnFocus?: boolean;
 		refreshInterval?: number;
 	}
 ) {
-	const { data, error } = useSWR(`/api/vessels/${action}`, fetcher, optionalFetchOptions ?? fetchOptions);
+	const { data, error } = useSWR(
+		`/api/vessels/${action}`,
+		(input: RequestInfo | URL, init?: RequestInit | undefined) =>
+			fetch(input, {
+				...init,
+				body: query,
+				method: 'POST',
+				headers: {
+					...init?.headers,
+
+					'Content-Type': 'application/json',
+				},
+			}).then((res) => res.json()),
+		optionalFetchOptions ?? fetchOptions
+	);
 
 	return {
-		vessels: data as VesselListItem[],
+		vessels: data as { generatedVessels: VesselListItem[]; closestVessels: Vessel[] },
 		isLoading: !error && !data,
 		isError: error,
 	};

@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl,
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { usePorts, useRoutes, useVessels } from '../../util/requests';
+import { useEffect } from 'react';
 let anchorIcon = L.icon({
 	iconUrl: 'anchor.svg',
 	iconSize: [25, 25],
@@ -50,7 +51,11 @@ export default function Map({
 		vessels,
 		isLoading: isVesselsLoading,
 		isError: isVesselsError,
-	} = useVessels('generate', { refreshInterval: refreshRate * 1000, revalidateIfStale: false, revalidateOnFocus: false });
+	} = useVessels('generate', `${selectedVessel ? JSON.stringify(selectedVessel) : undefined}`, {
+		refreshInterval: refreshRate * 1000,
+		revalidateIfStale: false,
+		revalidateOnFocus: false,
+	});
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
 	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
 
@@ -94,11 +99,12 @@ export default function Map({
 				})}
 
 			{vessels !== undefined &&
+				vessels.generatedVessels !== undefined &&
 				showVessels &&
-				vessels.map((x, i) => {
+				vessels.generatedVessels.map((x, i) => {
 					return x.vessels.map((y, i) => {
 						const isSelected = selectedVessel.mmsi === y.mmsi;
-						const isClosest = closestVessels.some((z) => y.mmsi === z.mmsi);
+						const isClosest = vessels.closestVessels.some((z) => y.mmsi === z.mmsi);
 						return (
 							<RotatedMarker
 								eventHandlers={{
@@ -113,7 +119,9 @@ export default function Map({
 													}),
 												})
 											).json();
-											setClosestVessels(result);
+
+											vessels.generatedVessels = vessels.generatedVessels;
+											vessels.closestVessels = result;
 											console.log(result);
 
 											setSelectedVessel(y);
@@ -126,8 +134,12 @@ export default function Map({
 								icon={isSelected ? selectedVesselIcon : isClosest ? closestVesselIcon : vesselIcon}
 								position={[y.lat, y.lon]}
 							>
-								{isSelected ? (
-									<Circle center={[y.lat, y.lon]} radius={5000} pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }} />
+								{isClosest ? (
+									<Circle
+										center={[y.lat, y.lon]}
+										radius={10 ** 4}
+										pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }}
+									/>
 								) : (
 									<></>
 								)}
