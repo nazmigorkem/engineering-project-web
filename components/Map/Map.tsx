@@ -137,7 +137,7 @@ export default function Map({
 								{isClosest ? (
 									<Circle
 										center={[y.lat, y.lon]}
-										radius={10 ** 4}
+										radius={y.aisRange}
 										pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }}
 									/>
 								) : (

@@ -6,8 +6,8 @@ import { Vessel } from '../util/type';
 
 const Home: NextPage = () => {
 	const [showAnchorageGroups, setShowAnchorageGroups] = useState(false);
-	const [selectedVessel, setSelectedVessel] = useState({ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 });
-	const [closestVessels, setClosestVessels] = useState([{ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 }]);
+	const [selectedVessel, setSelectedVessel] = useState({ mmsi: '-1', lat: 0, lon: 0, distance_per_tick: 0, course: 0, heading: 0, aisRange: 0 });
+	const [closestVessels, setClosestVessels] = useState([{ mmsi: '-1', lat: 0, lon: 0, distance_per_tick: 0, course: 0, heading: 0, aisRange: 0 }]);
 	const [showRoutes, setShowRoutes] = useState(false);
 	const [showVessels, setShowVessels] = useState(true);
 	const [refreshRate, setRefreshRate] = useState(3);
@@ -58,13 +58,13 @@ const Home: NextPage = () => {
 						<div className="text-white">MMSI: {selectedVessel.mmsi}</div>
 						<div className="text-white">Latitude: {selectedVessel.lat.toPrecision(10)}</div>
 						<div className="text-white">Longitude: {selectedVessel.lon.toPrecision(10)}</div>
-						<div className="text-white">Speed: {selectedVessel.speed.toPrecision(10)}</div>
+						<div className="text-white">Speed: {selectedVessel.distance_per_tick.toPrecision(10)}</div>
 						<div className="text-white">Course: {selectedVessel.course.toPrecision(10)}</div>
 						<div className="text-white">Heading: {selectedVessel.heading.toPrecision(10)}</div>
 					</div>
 					<button
 						onClick={() => {
-							setSelectedVessel({ mmsi: '-1', lat: 0, lon: 0, speed: 0, course: 0, heading: 0 });
+							setSelectedVessel({ mmsi: '-1', lat: 0, lon: 0, distance_per_tick: 0, course: 0, heading: 0, aisRange: 0 });
 						}}
 						className="bg-[#198179] col-span-2 m-4  h-16 rounded-md"
 					>
