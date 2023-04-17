@@ -1,8 +1,7 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl, Circle, Rectangle } from 'react-leaflet';
-import L, { LatLngExpression } from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, ScaleControl, Circle, Tooltip } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { usePorts, useRoutes, useVessels } from '../../util/requests';
-import { useEffect } from 'react';
+import { usePorts, useRoutes } from '../../util/requests';
 let anchorIcon = L.icon({
 	iconUrl: 'anchor.svg',
 	iconSize: [25, 25],
@@ -26,36 +25,24 @@ let closestVesselIcon = L.icon({
 import 'leaflet-rotatedmarker';
 import RotatedMarker from './RotatedMarker';
 import { Dispatch, SetStateAction } from 'react';
-import { Vessel } from '../../util/type';
+import { Vessel, VesselListItem } from '../../util/type';
 
 export default function Map({
 	showAnchorageGroups,
 	showRoutes,
 	showVessels,
-	refreshRate,
 	selectedVessel,
+	vessels,
 	setSelectedVessel,
-	closestVessels,
-	setClosestVessels,
 }: {
 	showAnchorageGroups: boolean;
 	showRoutes: boolean;
 	showVessels: boolean;
 	refreshRate: number;
 	selectedVessel: Vessel;
+	vessels: { generatedVessels: VesselListItem[]; closestVessels: Vessel[] };
 	setSelectedVessel: Dispatch<SetStateAction<Vessel>>;
-	closestVessels: Vessel[];
-	setClosestVessels: Dispatch<SetStateAction<Vessel[]>>;
 }) {
-	const {
-		vessels,
-		isLoading: isVesselsLoading,
-		isError: isVesselsError,
-	} = useVessels('generate', `${selectedVessel ? JSON.stringify(selectedVessel) : undefined}`, {
-		refreshInterval: refreshRate * 1000,
-		revalidateIfStale: false,
-		revalidateOnFocus: false,
-	});
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
 	const { routes, isLoading: isRoutesLodaing, isError: isRoutesError } = useRoutes('get');
 
@@ -122,7 +109,6 @@ export default function Map({
 
 											vessels.generatedVessels = vessels.generatedVessels;
 											vessels.closestVessels = result;
-											console.log(result);
 
 											setSelectedVessel(y);
 										}
@@ -135,11 +121,14 @@ export default function Map({
 								position={[y.lat, y.lon]}
 							>
 								{isClosest ? (
-									<Circle
-										center={[y.lat, y.lon]}
-										radius={y.aisRange}
-										pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }}
-									/>
+									<>
+										<Tooltip>{'MMSI: ' + y.mmsi}</Tooltip>
+										<Circle
+											center={[y.lat, y.lon]}
+											radius={y.aisRange}
+											pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }}
+										/>
+									</>
 								) : (
 									<></>
 								)}

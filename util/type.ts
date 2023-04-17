@@ -8,7 +8,16 @@ export const fetcher = (input: RequestInfo | URL, init?: RequestInit | undefined
 		},
 	}).then((res) => res.json());
 
-export type Vessel = { mmsi: string; lat: number; lon: number; distance_per_tick: number; course: number; heading: number; aisRange: number };
+export type Vessel = {
+	vessel_type: string;
+	mmsi: string;
+	lat: number;
+	lon: number;
+	distance_per_tick: number;
+	course: number;
+	heading: number;
+	aisRange: number;
+};
 export type VesselListItem = { route_id: number; from: string; to: string; end_points: Coordinate[]; vessels: Vessel[] };
 export type Port = {
 	name: string;
