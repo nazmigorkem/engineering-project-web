@@ -33,7 +33,13 @@ export function useVessels(
 	);
 
 	return {
-		vessels: data as { generatedVessels: VesselListItem[]; closestVessels: Vessel[] },
+		vessels: data as {
+			generated_vessels: VesselListItem[];
+			range_check: {
+				closest_vessels: Vessel[];
+				closest_dark_activity_vessels: Vessel[];
+			};
+		},
 		isLoading: !error && !data,
 		isError: error,
 	};

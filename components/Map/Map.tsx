@@ -40,7 +40,13 @@ export default function Map({
 	showVessels: boolean;
 	refreshRate: number;
 	selectedVessel: Vessel;
-	vessels: { generatedVessels: VesselListItem[]; closestVessels: Vessel[] };
+	vessels: {
+		generated_vessels: VesselListItem[];
+		range_check: {
+			closest_vessels: Vessel[];
+			closest_dark_activity_vessels: Vessel[];
+		};
+	};
 	setSelectedVessel: Dispatch<SetStateAction<Vessel>>;
 }) {
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');
@@ -86,29 +92,26 @@ export default function Map({
 				})}
 
 			{vessels !== undefined &&
-				vessels.generatedVessels !== undefined &&
+				vessels.generated_vessels !== undefined &&
 				showVessels &&
-				vessels.generatedVessels.map((x, i) => {
+				vessels.generated_vessels.map((x, i) => {
 					return x.vessels.map((y, i) => {
 						const isSelected = selectedVessel.mmsi === y.mmsi;
-						const isClosest = vessels.closestVessels.some((z) => y.mmsi === z.mmsi);
+						const isClosest = vessels.range_check.closest_vessels.some((z) => y.mmsi === z.mmsi);
 						return (
 							<RotatedMarker
 								eventHandlers={{
 									click: async (event: any) => {
 										if (!isSelected) {
 											const result = await (
-												await fetch(`/api/vessels/select`, {
+												await fetch(`/api/vessels/select?selected_vessel_mmsi=${y.mmsi}`, {
 													method: 'POST',
-													body: JSON.stringify({
-														mmsi: y['mmsi'],
-														route_id: x['route_id'],
-													}),
 												})
 											).json();
 
-											vessels.generatedVessels = vessels.generatedVessels;
-											vessels.closestVessels = result;
+											vessels.generated_vessels = vessels.generated_vessels;
+											vessels.range_check.closest_vessels = result.closest_vessels;
+											vessels.range_check.closest_dark_activity_vessels = result.closest_dark_activity_vessels;
 
 											setSelectedVessel(y);
 										}
@@ -118,14 +121,14 @@ export default function Map({
 								rotationAngle={y.course}
 								key={i}
 								icon={isSelected ? selectedVesselIcon : isClosest ? closestVesselIcon : vesselIcon}
-								position={[y.lat, y.lon]}
+								position={[y.position.latitude_in_degrees, y.position.longitude_in_degrees]}
 							>
 								{isClosest ? (
 									<>
 										<Tooltip>{'MMSI: ' + y.mmsi}</Tooltip>
 										<Circle
-											center={[y.lat, y.lon]}
-											radius={y.aisRange}
+											center={[y.position.latitude_in_degrees, y.position.longitude_in_degrees]}
+											radius={y.ais_range}
 											pathOptions={{ color: '#277370', fill: false, fillOpacity: 1 }}
 										/>
 									</>
@@ -146,21 +149,21 @@ export default function Map({
 							<>
 								{x.coordinates.length - 2 === i ? (
 									<>
-										<Circle center={[y[1], y[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+										<Circle center={[y[0], y[1]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
 										<Circle
-											center={[next[1], next[0]]}
+											center={[next[0], next[1]]}
 											radius={300}
 											pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }}
 										/>
 									</>
 								) : (
-									<Circle center={[y[1], y[0]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
+									<Circle center={[y[0], y[1]]} radius={300} pathOptions={{ color: '#277370', fill: true, fillOpacity: 1 }} />
 								)}
 								<Polyline
 									key={i}
 									positions={[
-										[y[1], y[0]],
-										[next[1], next[0]],
+										[y[0], y[1]],
+										[next[0], next[1]],
 									]}
 									pathOptions={{ color: '#277370' }}
 								></Polyline>
