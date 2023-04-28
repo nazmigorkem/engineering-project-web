@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { fetcher, Port, Route, Vessel, VesselListItem } from './type';
+import { fetcher, Port, Route, Vessel, VesselGenerationResponse, VesselListItem } from './type';
 
 const fetchOptions = {
 	revalidateIfStale: false,
@@ -33,13 +33,7 @@ export function useVessels(
 	);
 
 	return {
-		vessels: data as {
-			generated_vessels: VesselListItem[];
-			range_check: {
-				closest_vessels: Vessel[];
-				closest_dark_activity_vessels: Vessel[];
-			};
-		},
+		vessels: data as VesselGenerationResponse,
 		isLoading: !error && !data,
 		isError: error,
 	};

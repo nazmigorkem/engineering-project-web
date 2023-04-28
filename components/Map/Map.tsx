@@ -25,7 +25,7 @@ let closestVesselIcon = L.icon({
 import 'leaflet-rotatedmarker';
 import RotatedMarker from './RotatedMarker';
 import { Dispatch, SetStateAction } from 'react';
-import { Vessel, VesselListItem } from '../../util/type';
+import { Vessel, VesselGenerationResponse } from '../../util/type';
 
 export default function Map({
 	showAnchorageGroups,
@@ -40,13 +40,7 @@ export default function Map({
 	showVessels: boolean;
 	refreshRate: number;
 	selectedVessel: Vessel;
-	vessels: {
-		generated_vessels: VesselListItem[];
-		range_check: {
-			closest_vessels: Vessel[];
-			closest_dark_activity_vessels: Vessel[];
-		};
-	};
+	vessels: VesselGenerationResponse;
 	setSelectedVessel: Dispatch<SetStateAction<Vessel>>;
 }) {
 	const { ports, isLoading: isPortsLoading, isError: isPortsError } = usePorts('get');

@@ -3,29 +3,12 @@ import Map from '../components/Map';
 import { useEffect, useState } from 'react';
 import Switch from '../components/MapControllers/Switch';
 import { useVessels } from '../util/requests';
+import VesselCard from '../components/MapControllers/VesselCard';
+import { NOT_SELECTED_VESSEL } from '../util/type';
 
 const Home: NextPage = () => {
 	const [showAnchorageGroups, setShowAnchorageGroups] = useState(false);
-	const [selectedVessel, setSelectedVessel] = useState({
-		mmsi: -1,
-		position: {
-			latitude_in_degrees: 0,
-			latitude_in_radians: 0,
-			longitude_in_degrees: 0,
-			longitude_in_radians: 0,
-		},
-		course: 0,
-		heading: 0,
-		bearing: 0,
-		vessel_type: '',
-		distance_per_tick: 0,
-		ais_range: 0,
-		ais_broadcast_interval: 0,
-		current_route_index: 0,
-		is_going_reverse_route: false,
-		dark_activity: false,
-		last_distance_to_current_mid_point_end: 0,
-	});
+	const [selectedVessel, setSelectedVessel] = useState(NOT_SELECTED_VESSEL);
 
 	const [showRoutes, setShowRoutes] = useState(false);
 	const [showVessels, setShowVessels] = useState(true);
@@ -63,10 +46,22 @@ const Home: NextPage = () => {
 							onClick={() => {
 								fetch('/api/vessels/reset');
 							}}
-							className="bg-[#198179] col-span-2 h-16 rounded-md hover:bg-opacity-80 duration-200 font-semibold"
+							className="bg-[#198179] col-span-2 p-2 rounded-md hover:bg-opacity-80 duration-200 font-semibold"
 						>
 							Restart Simulation
 						</button>
+						<div className="col-span-2">
+							<div className="text-white text-2xl p-5 text-center">Total Detected Dark Activities</div>
+							<div className="overflow-y-auto h-[25rem] space-y-2">
+								{vessels.total_dark_activity_vessels.map((x, i) => {
+									return (
+										<div key={i} className="bg-emerald-800 p-3 mx-2 rounded-md">
+											<VesselCard vessel={x} />
+										</div>
+									);
+								})}
+							</div>
+						</div>
 					</div>
 				</div>
 				<div className="h-[100vh] w-full">
@@ -84,36 +79,11 @@ const Home: NextPage = () => {
 				<div id="menu-container" className="bg-[#0d4641] w-96 h-full select-none flex flex-col">
 					<div className="text-white text-2xl p-5 text-center">Selected Vessel</div>
 					<div className="bg-emerald-800 p-3 mx-2 rounded-md">
-						<div className="text-white">Vessel Type: {selectedVessel.vessel_type}</div>
-						<div className="text-white">MMSI: {selectedVessel.mmsi}</div>
-						<div className="text-white">Latitude: {selectedVessel.position.latitude_in_degrees.toPrecision(10)}</div>
-						<div className="text-white">Longitude: {selectedVessel.position.longitude_in_degrees.toPrecision(10)}</div>
-						<div className="text-white">Speed: {selectedVessel.distance_per_tick.toPrecision(10) + ' meters per tick'}</div>
-						<div className="text-white">Course: {selectedVessel.course.toPrecision(10)}</div>
-						<div className="text-white">Heading: {selectedVessel.heading.toPrecision(10)}</div>
+						<VesselCard vessel={selectedVessel} />
 					</div>
 					<button
 						onClick={() => {
-							setSelectedVessel({
-								mmsi: -1,
-								position: {
-									latitude_in_degrees: 0,
-									latitude_in_radians: 0,
-									longitude_in_degrees: 0,
-									longitude_in_radians: 0,
-								},
-								course: 0,
-								heading: 0,
-								bearing: 0,
-								vessel_type: '',
-								distance_per_tick: 0,
-								ais_range: 0,
-								ais_broadcast_interval: 0,
-								current_route_index: 0,
-								is_going_reverse_route: false,
-								dark_activity: false,
-								last_distance_to_current_mid_point_end: 0,
-							});
+							setSelectedVessel(NOT_SELECTED_VESSEL);
 							vessels.range_check.closest_vessels = [];
 						}}
 						className="bg-[#198179] col-span-2 p-2 mx-2 mt-2 rounded-md hover:bg-opacity-80 duration-200 font-semibold"
@@ -125,13 +95,7 @@ const Home: NextPage = () => {
 						{vessels.range_check.closest_vessels.map((x, i) => {
 							return (
 								<div key={i} className="bg-emerald-800 p-3 mx-2 rounded-md">
-									<div className="text-white">Vessel Type: {x.vessel_type}</div>
-									<div className="text-white">MMSI: {x.mmsi}</div>
-									<div className="text-white">Latitude: {x.position.latitude_in_degrees.toPrecision(10)}</div>
-									<div className="text-white">Longitude: {x.position.longitude_in_degrees.toPrecision(10)}</div>
-									<div className="text-white">Speed: {x.distance_per_tick.toPrecision(10) + ' meters per tick'}</div>
-									<div className="text-white">Course: {x.course.toPrecision(10)}</div>
-									<div className="text-white">Heading: {x.heading.toPrecision(10)}</div>
+									<VesselCard vessel={x} />
 									<div className="text-white flex items-center gap-3">
 										Dark Activity: {'' + x.dark_activity}
 										<button
@@ -157,13 +121,7 @@ const Home: NextPage = () => {
 						{vessels.range_check.closest_dark_activity_vessels.map((x, i) => {
 							return (
 								<div key={i} className="bg-emerald-800 p-3 mx-2 rounded-md">
-									<div className="text-white">Vessel Type: {x.vessel_type}</div>
-									<div className="text-white">MMSI: {x.mmsi}</div>
-									<div className="text-white">Latitude: {x.position.latitude_in_degrees.toPrecision(10)}</div>
-									<div className="text-white">Longitude: {x.position.longitude_in_degrees.toPrecision(10)}</div>
-									<div className="text-white">Speed: {x.distance_per_tick.toPrecision(10) + ' meters per tick'}</div>
-									<div className="text-white">Course: {x.course.toPrecision(10)}</div>
-									<div className="text-white">Heading: {x.heading.toPrecision(10)}</div>
+									<VesselCard vessel={x} />
 									<div className="text-white flex items-center gap-3">
 										Dark Activity: {'' + x.dark_activity}
 										<button
