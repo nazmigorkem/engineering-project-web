@@ -9,7 +9,6 @@ const fetchOptions = {
 
 export function useVessels(
 	action: 'get' | 'reset' | 'generate',
-	query?: string,
 	optionalFetchOptions?: {
 		revalidateIfStale?: boolean;
 		revalidateOnFocus?: boolean;
@@ -21,7 +20,6 @@ export function useVessels(
 		(input: RequestInfo | URL, init?: RequestInit | undefined) =>
 			fetch(input, {
 				...init,
-				body: query,
 				method: 'POST',
 				headers: {
 					...init?.headers,

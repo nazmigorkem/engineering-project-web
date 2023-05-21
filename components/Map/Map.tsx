@@ -105,7 +105,7 @@ export default function Map({
 
 											vessels.generated_vessels = vessels.generated_vessels;
 											vessels.range_check.closest_vessels = result.closest_vessels;
-											vessels.range_check.closest_dark_activity_vessels = result.closest_dark_activity_vessels;
+											vessels.range_check.detected_dark_activity_vessels = result.detected_dark_activity_vessels;
 
 											setSelectedVessel(y);
 										}
@@ -117,9 +117,9 @@ export default function Map({
 								icon={isSelected ? selectedVesselIcon : isClosest ? closestVesselIcon : vesselIcon}
 								position={[y.position.latitude_in_degrees, y.position.longitude_in_degrees]}
 							>
+								<Tooltip>{'MMSI: ' + y.mmsi}</Tooltip>
 								{isClosest ? (
 									<>
-										<Tooltip>{'MMSI: ' + y.mmsi}</Tooltip>
 										<Circle
 											center={[y.position.latitude_in_degrees, y.position.longitude_in_degrees]}
 											radius={y.ais_range}

@@ -18,7 +18,7 @@ const Home: NextPage = () => {
 		vessels,
 		isLoading: isVesselsLoading,
 		isError: isVesselsError,
-	} = useVessels('generate', `${selectedVessel ? JSON.stringify(selectedVessel) : undefined}`, {
+	} = useVessels('generate', {
 		refreshInterval: refreshRate * 1000,
 		revalidateIfStale: false,
 		revalidateOnFocus: false,
@@ -82,9 +82,12 @@ const Home: NextPage = () => {
 						<VesselCard vessel={selectedVessel} />
 					</div>
 					<button
-						onClick={() => {
+						onClick={async () => {
 							setSelectedVessel(NOT_SELECTED_VESSEL);
 							vessels.range_check.closest_vessels = [];
+							await fetch(`/api/vessels/reset_selection`, {
+								method: 'POST',
+							});
 						}}
 						className="bg-[#198179] col-span-2 p-2 mx-2 mt-2 rounded-md hover:bg-opacity-80 duration-200 font-semibold"
 					>
@@ -116,9 +119,35 @@ const Home: NextPage = () => {
 							);
 						})}
 					</div>
-					<div className="text-white text-2xl p-5 text-center">Closest Dark Activity Vessels</div>
+					<div className="text-white text-2xl p-5 text-center">Detected Dark Activities</div>
 					<div className="overflow-y-auto space-y-2 h-[200rem]">
-						{vessels.range_check.closest_dark_activity_vessels.map((x, i) => {
+						{vessels.range_check.detected_dark_activity_vessels.map((x, i) => {
+							return (
+								<div key={i} className="bg-emerald-800 p-3 mx-2 rounded-md">
+									<VesselCard vessel={x} />
+									<div className="text-white flex items-center gap-3">
+										Dark Activity: {'' + x.dark_activity}
+										<button
+											className="p-3 hover:cursor-pointer hover:bg-green-700 duration-200 bg-green-500 rounded-md"
+											onClick={async () => {
+												await fetch(
+													`/api/vessels/dark_activity?is_dark_activity=${false}&selected_vessel_mmsi_for_dark_activity=${
+														x.mmsi
+													}`,
+													{
+														method: 'POST',
+													}
+												);
+											}}
+										></button>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+					<div className="text-white text-2xl p-5 text-center">All Nearby Dark Activities</div>
+					<div className="overflow-y-auto space-y-2 h-[200rem]">
+						{vessels.range_check.all_dark_activity_vessels.map((x, i) => {
 							return (
 								<div key={i} className="bg-emerald-800 p-3 mx-2 rounded-md">
 									<VesselCard vessel={x} />
