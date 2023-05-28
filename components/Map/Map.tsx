@@ -28,14 +28,12 @@ import { Dispatch, SetStateAction } from 'react';
 import { Vessel, VesselGenerationResponse } from '../../util/type';
 
 export default function Map({
-	showAnchorageGroups,
 	showRoutes,
 	showVessels,
 	selectedVessel,
 	vessels,
 	setSelectedVessel,
 }: {
-	showAnchorageGroups: boolean;
 	showRoutes: boolean;
 	showVessels: boolean;
 	refreshRate: number;
@@ -105,7 +103,8 @@ export default function Map({
 
 											vessels.generated_vessels = vessels.generated_vessels;
 											vessels.range_check.closest_vessels = result.closest_vessels;
-											vessels.range_check.detected_dark_activity_vessels = result.detected_dark_activity_vessels;
+											vessels.range_check.detected_dark_activity_vessels_by_fsm = result.detected_dark_activity_vessels_by_fsm;
+											vessels.range_check.detected_dark_activity_vessels_by_ml = result.detected_dark_activity_vessels_by_ml;
 
 											setSelectedVessel(y);
 										}
@@ -166,27 +165,6 @@ export default function Map({
 					});
 				})}
 			<ScaleControl imperial={false} />
-			{!ports !== undefined &&
-				showAnchorageGroups &&
-				ports.map((x) => {
-					const anchorage = x.find((y) => y.type === 'anchorage');
-					return x.map(
-						(y, i) =>
-							y.type !== 'anchorage' &&
-							anchorage && (
-								<>
-									<Polyline
-										key={i}
-										pathOptions={{ color: 'lime' }}
-										positions={[
-											[anchorage.lat, anchorage.long],
-											[y.lat, y.long],
-										]}
-									/>
-								</>
-							)
-					);
-				})}
 		</MapContainer>
 	);
 }
