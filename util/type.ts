@@ -35,6 +35,8 @@ export type VesselGenerationResponse = {
 	generated_vessels: VesselListItem[];
 	range_check: {
 		closest_vessels: Vessel[];
+		current_tick_detected_dark_activity_vessels_by_fsm: Vessel[];
+		current_tick_detected_dark_activity_vessels_by_ml: Vessel[];
 		detected_dark_activity_vessels_by_fsm: Vessel[];
 		detected_out_of_range_vessels_by_fsm: Vessel[];
 		detected_dark_activity_vessels_by_ml: Vessel[];

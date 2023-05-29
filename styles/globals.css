@@ -52,3 +52,20 @@ body {
 .leaflet-control-layers-list {
 	@apply bg-slate-700 text-white;
 }
+
+::-webkit-scrollbar {
+	@apply w-3;
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	@apply bg-green-500 rounded-md;
+}
+
+::-webkit-scrollbar-track {
+	@apply bg-green-700 rounded-md;
+	border: none;
+}
