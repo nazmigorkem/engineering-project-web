@@ -1,10 +1,11 @@
 ### Dark Activity Detection Visualization
 
-This project is demonstrates how dark activity detection works.
+This project is a visualization for dark activity simulation.
 
 ##### Requirements:
 
 -   Node.js
+-   Running https://github.com/nazmigorkem/engineering-project-backend project instance on the same host machine.
 
 ##### Installation:
 
